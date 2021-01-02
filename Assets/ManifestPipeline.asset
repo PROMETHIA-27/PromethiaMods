@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10e8b80948512ae42853fea31dc12f56, type: 3}
+  m_Name: ManifestPipeline
+  m_EditorClassIdentifier: 
+  runSteps:
+  - {fileID: 114904993374553492}
+  - {fileID: 114338270082318296}
+  - {fileID: 114555126170631658}
+  - {fileID: 114726265237062492}
+  - {fileID: 114486845098766394}
+  - {fileID: 114753976582319488}
+  - {fileID: 114477159237544444}
+  - {fileID: 114866011582543462}
+  manifests: []
+--- !u!114 &114338270082318296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52535e32ecc9a684aaaec1ebe492e333, type: 3}
+  m_Name: StageManifestAssetBundles
+  m_EditorClassIdentifier: 
+  AssetBundleBuildOptions: 1
+  buildTarget: 5
+  recurseDirectories: 0
+  simulate: 0
+--- !u!114 &114477159237544444
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ca52d07aa4ab6e4fa1ad99e1e48debb, type: 3}
+  m_Name: ExecuteGame
+  m_EditorClassIdentifier: 
+  extraCommandLineArgs: []
+--- !u!114 &114486845098766394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e0a5ef682bb1554eb86905e3cd1fb77, type: 3}
+  m_Name: DeployDependencies
+  m_EditorClassIdentifier: 
+--- !u!114 &114555126170631658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cef48dd2e1fea374fb43a7afd6d36045, type: 3}
+  m_Name: StageManifestFiles
+  m_EditorClassIdentifier: 
+  includeReadme: 0
+  includeIcon: 0
+  includeManifestJson: 1
+--- !u!114 &114726265237062492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae867c1daa7713a469021539e43f03e1, type: 3}
+  m_Name: DeployBepinex
+  m_EditorClassIdentifier: 
+  LogLevel: -1
+  ShowConsole: 0
+--- !u!114 &114753976582319488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9998d3cf19b1e1b47a9d6863002f089e, type: 3}
+  m_Name: DeployMods
+  m_EditorClassIdentifier: 
+--- !u!114 &114866011582543462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8808e815b3ce9c94e9552cb1dee9e305, type: 3}
+  m_Name: ZipStaging
+  m_EditorClassIdentifier: 
+--- !u!114 &114904993374553492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eba0aa78928dd74492e7c60b287d654, type: 3}
+  m_Name: StageAssemblies
+  m_EditorClassIdentifier: 
+  stageDebugDatabases: 0

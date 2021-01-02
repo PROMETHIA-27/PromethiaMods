@@ -1,0 +1,23 @@
+{
+    "name": "Architect",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Assembly-CSharp.dll",
+        "BepInEx.dll",
+        "BepInEx.Preloader.dll",
+        "R2API.dll",
+        "Assembly-CSharp.R2API.mm.dll",
+        "MMHOOK_Assembly-CSharp.dll",
+        "Mono.Cecil.dll",
+        "MonoMod.Utils.dll",
+        "MonoMod.RuntimeDetour.dll",
+        "0Harmony.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
