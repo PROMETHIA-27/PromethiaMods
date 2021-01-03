@@ -122,7 +122,7 @@ namespace Architect.EntityStates.Architect
                                 teamIndexOverride = teamComponent.teamIndex,
                                 ignoreTeamMemberLimit = true
                             }.Perform();
-                            master.body.GetComponent<NodeData>().element = gameObject.GetComponent<ArchitectData>().element;
+                            master.GetPropertyValue<GameObject>("bodyInstanceObject").GetComponent<NodeData>().element = gameObject.GetComponent<ArchitectData>().element;
 
                             if (skillLocator)
                             {

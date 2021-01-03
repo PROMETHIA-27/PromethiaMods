@@ -38,7 +38,7 @@ namespace Architect
             ArchitectSkills = AssetBundle.LoadFromFile("ArchitectSkills");
 
 
-
+            
 
 
             AddLanguageTokens();
@@ -369,15 +369,7 @@ namespace Architect
 
         private void SetUpStatRecalcHook()
         {
-            IL.RoR2.CharacterBody.RecalculateStats += PlaceILInfo;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantBaseDamage;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantBaseAttackSpeed;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantAttackSpeedDebuffPenalty;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantBaseArmor;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantBaseHP;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantBaseCrit;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantBaseRegen;
-            IL.RoR2.CharacterBody.RecalculateStats += GrantMoveSpeedDebuffPenalty;
+            PromethiAPI.Hooks.CharacterBody.RecalculateStats.IL += PlaceILInfo;
         } //PRAISE HARB
 
         private void PlaceILInfo(ILContext il)
@@ -397,6 +389,15 @@ namespace Architect
                 NodeData.calculating = dat;
                 NodeData.activeData = dat;
             });
+
+            GrantBaseDamage(il);
+            GrantBaseAttackSpeed(il);
+            GrantAttackSpeedDebuffPenalty(il);
+            GrantBaseArmor(il);
+            GrantBaseHP(il);
+            GrantBaseCrit(il);
+            GrantBaseRegen(il);
+            GrantMoveSpeedDebuffPenalty(il);
         }
 
         private void GrantBaseDamage(ILContext il)

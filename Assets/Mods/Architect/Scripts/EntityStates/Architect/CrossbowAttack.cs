@@ -4,7 +4,7 @@ using System.Text;
 using RoR2;
 using UnityEngine;
 using EntityStates;
-using R2API;
+//using R2API;
 using UnityEngine.Networking;
 
 namespace Architect.EntityStates.Architect
