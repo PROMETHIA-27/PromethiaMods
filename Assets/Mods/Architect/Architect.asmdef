@@ -1,6 +1,8 @@
 {
     "name": "Architect",
-    "references": [],
+    "references": [
+        "PromethiAPI"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],

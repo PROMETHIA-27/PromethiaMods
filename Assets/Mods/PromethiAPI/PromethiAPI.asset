@@ -10,23 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9368641d3f728ba4583a23a8fc2e03d2, type: 3}
-  m_Name: ArchitectManifest
+  m_Name: PromethiAPI
   m_EditorClassIdentifier: 
   author: Promethia
-  version_number: 0.0.1
+  version_number: 1.0.0
   website_url: https://github.com/PROMETHIA-27/PromethiaMods
-  description: The Architect
+  description: Base API plugin for all my mods until something better arrives
   dependencies:
   - Twiner-RainOfStages-2.2.0
   unityPackages: []
-  plugins:
-  - {fileID: 5897886265953266890, guid: 8236482de0fb6984c897ec1b9b35a42d, type: 3}
+  plugins: []
   patchers: []
   monomod: []
-  assetBundles:
-  - assetBundleName: ArchitectSprites
-    assets:
-    - {fileID: 21300000, guid: a1af73b2b70cc5d46ad0a9eee2e4e52e, type: 3}
-    - {fileID: 21300000, guid: f586d6a42e2be76499c6b48e7f922bc3, type: 3}
+  assetBundles: []
   readme: {fileID: 0}
   icon: {fileID: 0}

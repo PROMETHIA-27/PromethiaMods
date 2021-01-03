@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1627637702, guid: d3bbfb1e816b4714b88ecf5c0bb67e5a, type: 3}
-  m_Name: DesignNodePrimaryFamily
+  m_Name: DesignNodePrimary
   m_EditorClassIdentifier: 
   variants:
   - skillDef: {fileID: 11400000, guid: ac1a291d6e479414e87d1e920e430f74, type: 2}

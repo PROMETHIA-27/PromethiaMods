@@ -12,14 +12,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
+using PromethiAPI;
 
 namespace Architect
 {
-    [BepInDependency("com.PassivePicasso.RainOfStages", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin(
-        "com.Promethia.Architect",
-        "Architect",
-        "0.0.1")]
+    [BepInDependency("com.Promethia.PromethiAPI", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInPlugin("com.Promethia.Architect", "Architect", "0.0.1")]
     //[R2APISubmoduleDependency(nameof(LoadoutAPI), nameof(SurvivorAPI), nameof(LanguageAPI), nameof(ResourcesAPI), nameof(PrefabAPI), nameof(BuffAPI))]
     public class ArchitectPlugin : BaseUnityPlugin
     {
@@ -27,6 +25,8 @@ namespace Architect
 
         public static AssetBundle ArchitectPrefabs;
         public static AssetBundle ArchitectSprites;
+        public static AssetBundle ArchitectMaterials;
+        public static AssetBundle ArchitectSkills;
 
         public void Awake()
         {
@@ -34,8 +34,8 @@ namespace Architect
 
             ArchitectPrefabs = AssetBundle.LoadFromFile("ArchitectPrefabs");
             ArchitectSprites = AssetBundle.LoadFromFile("ArchitectSprites");
-
-            Utils.Resources.LoadAssetBundleResourcesProvider("@ArchitectSprites", ArchitectSprites);
+            ArchitectMaterials = AssetBundle.LoadFromFile("ArchitectMaterials");
+            ArchitectSkills = AssetBundle.LoadFromFile("ArchitectSkills");
 
 
 
@@ -49,17 +49,13 @@ namespace Architect
 
             AddCharacter();
 
-            AddPrimarySkill();
+            SkillCatalog.getAdditionalSkillDefs += AddSkills;
 
-            AddSecondarySkill();
+            SkillCatalog.getAdditionalSkillFamilies += AddSkillFamilies;
 
-            AddUtilitySkill();
+            MasterCatalog.getAdditionalEntries += AddMasterPrefabs;
 
-            AddTurretSkills();
-
-            AddMasterPrefabs();
-
-            AddBuffs();
+            BuffCatalog.modHelper.getAdditionalEntries += AddBuffs;
 
             GlobalEventManager.onServerDamageDealt += NodeProcs;
 
@@ -70,23 +66,27 @@ namespace Architect
 
         private void AddLanguageTokens()
         {
-            LanguageAPI.Add("ARCHITECT_NAME", "Architect");
-            LanguageAPI.Add("ARCHITECT_DESCRIPTION", "The Architect");
+            Dictionary<string, string> NewTokens = new Dictionary<string, string>();
 
-            LanguageAPI.Add("ARCHITECT_PRIMARY_CROSSBOW_NAME", "Integrated Crossbow");
-            LanguageAPI.Add("ARCHITECT_PRIMARY_CROSSBOW_DESCRIPTION", "Fire a crossbow made to draw power from the elements of the universe");
+            NewTokens.Add("ARCHITECT_NAME", "Architect");
+            NewTokens.Add("ARCHITECT_DESCRIPTION", "The Architect");
 
-            LanguageAPI.Add("ARCHITECT_SECONDARY_PLACENODE_NAME", "Construct Node");
-            LanguageAPI.Add("ARCHITECT_SECONDARY_PLACENODE_DESCRIPTION", "Conjure a physical program to execute your will.");
+            NewTokens.Add("ARCHITECT_PRIMARY_CROSSBOW_NAME", "Integrated Crossbow");
+            NewTokens.Add("ARCHITECT_PRIMARY_CROSSBOW_DESCRIPTION", "Fire a crossbow made to draw power from the elements of the universe");
 
-            LanguageAPI.Add("ARCHITECT_UTILITY_OVERLAY_NAME", "Overlay Link");
-            LanguageAPI.Add("ARCHITECT_UTILITY_OVERLAY_DESCRIPTION", "Link nodes together to draw out powerful effects and create a network of nodes");
+            NewTokens.Add("ARCHITECT_SECONDARY_PLACENODE_NAME", "Construct Node");
+            NewTokens.Add("ARCHITECT_SECONDARY_PLACENODE_DESCRIPTION", "Conjure a physical program to execute your will.");
 
-            LanguageAPI.Add("ARCHITECT_SPECIAL_SCOPESHIFT_NAME", "Scope Shift");
-            LanguageAPI.Add("ARCHITECT_SPECIAL_SCOPESHIFT_DESCRIPTION", "Swap the active element ( MASS // DESIGN // BLOOD )");
+            NewTokens.Add("ARCHITECT_UTILITY_OVERLAY_NAME", "Overlay Link");
+            NewTokens.Add("ARCHITECT_UTILITY_OVERLAY_DESCRIPTION", "Link nodes together to draw out powerful effects and create a network of nodes");
 
-            LanguageAPI.Add("ARCHITECT_NODE_NAME", "Node");
-            LanguageAPI.Add("ARCHITECT_NODE_SUBTITLE", "Foreign Concept");
+            NewTokens.Add("ARCHITECT_SPECIAL_SCOPESHIFT_NAME", "Scope Shift");
+            NewTokens.Add("ARCHITECT_SPECIAL_SCOPESHIFT_DESCRIPTION", "Swap the active element ( MASS // DESIGN // BLOOD )");
+
+            NewTokens.Add("ARCHITECT_NODE_NAME", "Node");
+            NewTokens.Add("ARCHITECT_NODE_SUBTITLE", "Foreign Concept");
+
+            Language.english.SetStringsByTokens(NewTokens);
         }
 
         static GameObject arBody;
@@ -97,9 +97,11 @@ namespace Architect
                 list.Add(Resources.Load<GameObject>("@Architect:Assets/Prefabs/ArchitectNodeBody.prefab"));
 
                 //arBody = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/characterbodies/EngiBody"), "ArchitectBody");
-                arBody = Instantiate(Resources.Load<GameObject>("prefabs/characterbodies/EngiBody");
+                arBody = Instantiate(Resources.Load<GameObject>("prefabs/characterbodies/EngiBody"));
                 arBody.name = "ArchitectBody";
                 arBody.AddComponent<ArchitectData>();
+                NetworkUtils.RegisterPrefab(arBody);
+                
                 list.Add(arBody);
             };
         }
@@ -112,42 +114,30 @@ namespace Architect
             var skinController = bodyPrefab.GetComponentInChildren<ModelSkinController>(true);
             var mdl = skinController.gameObject;
 
-            var skin = new LoadoutAPI.SkinDefInfo()
+            var skin = ScriptableObject.CreateInstance<SkinDef>();
+            skin.icon = null; //TODO: FIX THIS
+            skin.name = "ArchitectNodeSkin";
+            skin.nameToken = "";
+            skin.unlockableName = "";
+            skin.rootObject = mdl;
+            skin.baseSkins = new SkinDef[0];
+            skin.gameObjectActivations = new SkinDef.GameObjectActivation[0];
+            skin.rendererInfos = new CharacterModel.RendererInfo[]
             {
-                Icon = LoadoutAPI.CreateSkinIcon(Color.white, new Color(0.75f, 0.75f, 0.75f), Color.white, new Color(0.75f, 0.75f, 0.75f)),
-
-                Name = "ArchitectNodeSkin",
-
-                NameToken = "",
-
-                UnlockableName = "",
-
-                RootObject = mdl,
-
-                BaseSkins = Array.Empty<SkinDef>(),
-
-                GameObjectActivations = new SkinDef.GameObjectActivation[0],
-
-                RendererInfos = new CharacterModel.RendererInfo[]
+                new CharacterModel.RendererInfo()
                 {
-                    new CharacterModel.RendererInfo()
-                    {
-                        defaultMaterial = Resources.Load<Material>("@Architect:Assets/Materials/DefaultMat.mat"),
-                        defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
-                        ignoreOverlays = false,
-                        renderer = renderers[0]
-                    }
-                },
-
-                MeshReplacements = new SkinDef.MeshReplacement[0],
-
-                ProjectileGhostReplacements = new SkinDef.ProjectileGhostReplacement[0],
-
-                MinionSkinReplacements = new SkinDef.MinionSkinReplacement[0]
+                    defaultMaterial = ArchitectMaterials.LoadAsset<Material>("DefaultMat"),
+                    defaultShadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On,
+                    ignoreOverlays = false,
+                    renderer = renderers[0]
+                }
             };
+            skin.meshReplacements = new SkinDef.MeshReplacement[0];
+            skin.projectileGhostReplacements = new SkinDef.ProjectileGhostReplacement[0];
+            skin.minionSkinReplacements = new SkinDef.MinionSkinReplacement[0];
 
             Array.Resize(ref skinController.skins, 1);
-            skinController.skins[0] = LoadoutAPI.CreateNewSkinDef(skin);
+            skinController.skins[0] = skin;
         }
 
         private void AddCharacter()
@@ -165,225 +155,128 @@ namespace Architect
                     //Description
                     descriptionToken = "ARCHITECT_DESCRIPTION",
                     //Display 
-                    displayPrefab = PrefabAPI.InstantiateClone(Resources.Load<GameObject>("prefabs/characterdisplays/EngiDisplay"), "ArchitectDisplay"),
+                    displayPrefab = Instantiate(Resources.Load<GameObject>("prefabs/characterdisplays/EngiDisplay")),
                     //Color on select screen
                     primaryColor = new Color(0.8039216f, 0.482352942f, 0.843137264f),
                     //Unlockable name
                     unlockableName = ""
                 };
                 
-
                 list.Add(mySurvivorDef);
             };
         }
 
         static SkillLocator skillLocator;
-        private void AddPrimarySkill()
+        private void AddSkills(List<SkillDef> list)
         {
             skillLocator = arBody.GetComponent<SkillLocator>();
 
-            var mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(EntityStates.Architect.CrossbowAttack1));
-            mySkillDef.activationStateMachineName = "Weapon";
-            mySkillDef.baseMaxStock = 6;
-            mySkillDef.baseRechargeInterval = 0.5f;
-            mySkillDef.beginSkillCooldownOnSkillEnd = true;
-            mySkillDef.canceledFromSprinting = false;
-            mySkillDef.fullRestockOnAssign = true;
-            mySkillDef.interruptPriority = InterruptPriority.Skill;
-            mySkillDef.isBullets = true;
-            mySkillDef.isCombatSkill = true;
-            mySkillDef.mustKeyPress = false;
-            mySkillDef.noSprint = true;
-            mySkillDef.rechargeStock = 1;
-            mySkillDef.requiredStock = 1;
-            mySkillDef.shootDelay = 0.1f;
-            mySkillDef.stockToConsume = 1;
-            mySkillDef.icon = ArchitectSprites.LoadAsset<Sprite>("pog");
-            mySkillDef.skillDescriptionToken = "ARCHITECT_PRIMARY_CROSSBOW_DESCRIPTION";
-            mySkillDef.skillName = "ARCHITECT_PRIMARY_CROSSBOW_NAME";
-            mySkillDef.skillNameToken = "ARCHITECT_PRIMARY_CROSSBOW_NAME";
-
-            LoadoutAPI.AddSkillDef(mySkillDef);
+            list.Add(ArchitectSkills.LoadAsset<SkillDef>("ArchitectCrossbow"));
+            list.Add(ArchitectSkills.LoadAsset<SkillDef>("ArchitectInstance"));
+            list.Add(ArchitectSkills.LoadAsset<SkillDef>("ArchitectLink"));
+            list.Add(ArchitectSkills.LoadAsset<SkillDef>("ArchitectScopeShift"));
+            list.Add(ArchitectSkills.LoadAsset<SkillDef>("DesignNodeFireTesla"));
 
             var skillFamily = skillLocator.primary.skillFamily;
 
             Array.Resize(ref skillFamily.variants, skillFamily.variants.Length + 1);
             skillFamily.variants[skillFamily.variants.Length - 1] = new SkillFamily.Variant
             {
-                skillDef = mySkillDef,
+                skillDef = ArchitectSkills.LoadAsset<SkillDef>("ArchitectCrossbow"),
                 unlockableName = "",
-                viewableNode = new ViewablesCatalog.Node(mySkillDef.skillNameToken, false, null)
-            };
-        }
-
-        private void AddSecondarySkill()
-        {
-            var mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(EntityStates.Architect.Instance));
-            mySkillDef.activationStateMachineName = "Weapon";
-            mySkillDef.baseMaxStock = 1;
-            mySkillDef.baseRechargeInterval = 14f;
-            mySkillDef.beginSkillCooldownOnSkillEnd = true;
-            mySkillDef.canceledFromSprinting = true;
-            mySkillDef.fullRestockOnAssign = false;
-            mySkillDef.interruptPriority = InterruptPriority.Skill;
-            mySkillDef.isBullets = false;
-            mySkillDef.isCombatSkill = false;
-            mySkillDef.mustKeyPress = false;
-            mySkillDef.noSprint = false;
-            mySkillDef.rechargeStock = 1;
-            mySkillDef.requiredStock = 1;
-            mySkillDef.shootDelay = 0.1f;
-            mySkillDef.stockToConsume = 0;
-            mySkillDef.icon = ArchitectSprites.LoadAsset<Sprite>("pog");
-            mySkillDef.skillDescriptionToken = "ARCHITECT_SECONDARY_PLACENODE_DESCRIPTION";
-            mySkillDef.skillName = "ARCHITECT_SECONDARY_PLACENODE_NAME";
-            mySkillDef.skillNameToken = "ARCHITECT_SECONDARY_PLACENODE_NAME";
-
-            LoadoutAPI.AddSkillDef(mySkillDef);
-            //This adds our skilldef. If you don't do this, the skill will not work.
-
-            //Note; if your character does not originally have a skill family for this, use the following:
-            //skillLocator.special = gameObject.AddComponent<GenericSkill>();
-            //var newFamily = ScriptableObject.CreateInstance<SkillFamily>();
-            //LoadoutAPI.AddSkillFamily(newFamily);
-            //skillLocator.special.SetFieldValue("_skillFamily", newFamily);
-            //var specialSkillFamily = skillLocator.special.skillFamily;
-
-
-            //Note; you can change component.primary to component.secondary , component.utility and component.special
-            var skillFamily = skillLocator.secondary.skillFamily;
-
-            //If this is an alternate skill, use this code.
-            // Here, we add our skill as a variant to the exisiting Skill Family.
-            Array.Resize(ref skillFamily.variants, skillFamily.variants.Length + 1);
-            skillFamily.variants[skillFamily.variants.Length - 1] = new SkillFamily.Variant
-            {
-                skillDef = mySkillDef,
-                unlockableName = "",
-                viewableNode = new ViewablesCatalog.Node(mySkillDef.skillNameToken, false, null)
+                viewableNode = new ViewablesCatalog.Node(ArchitectSkills.LoadAsset<SkillDef>("ArchitectCrossbow").skillNameToken, false, null)
             };
 
-            //Note; if your character does not originally have a skill family for this, use the following:
-            //skillFamily.variants = new SkillFamily.Variant[1]; // substitute 1 for the number of skill variants you are implementing
-
-            //If this is the default/first skill, copy this code and remove the //,
-            //skillFamily.variants[0] = new SkillFamily.Variant
-            //{
-            //    skillDef = mySkillDef,
-            //    unlockableName = "",
-            //    viewableNode = new ViewablesCatalog.Node(mySkillDef.skillNameToken, false, null)
-            //};
-        }
-
-        private void AddUtilitySkill()
-        {
-            var mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(EntityStates.Architect.Link));
-            mySkillDef.activationStateMachineName = "Weapon";
-            mySkillDef.baseMaxStock = 1;
-            mySkillDef.baseRechargeInterval = 0.1f;
-            mySkillDef.beginSkillCooldownOnSkillEnd = true;
-            mySkillDef.canceledFromSprinting = true;
-            mySkillDef.fullRestockOnAssign = true;
-            mySkillDef.interruptPriority = InterruptPriority.Skill;
-            mySkillDef.isBullets = false;
-            mySkillDef.isCombatSkill = false;
-            mySkillDef.mustKeyPress = false;
-            mySkillDef.noSprint = false;
-            mySkillDef.rechargeStock = 1;
-            mySkillDef.requiredStock = 1;
-            mySkillDef.shootDelay = 0.1f;
-            mySkillDef.stockToConsume = 0;
-            mySkillDef.icon = ArchitectSprites.LoadAsset<Sprite>("pog");
-            mySkillDef.skillDescriptionToken = "ARCHITECT_UTILITY_OVERLAY_DESCRIPTION";
-            mySkillDef.skillName = "ARCHITECT_UTILITY_OVERLAY_NAME";
-            mySkillDef.skillNameToken = "ARCHITECT_UTILITY_OVERLAY_NAME";
-
-            LoadoutAPI.AddSkillDef(mySkillDef);
-
-            var skillFamily = skillLocator.utility.skillFamily;
+            skillFamily = skillLocator.secondary.skillFamily;
 
             Array.Resize(ref skillFamily.variants, skillFamily.variants.Length + 1);
             skillFamily.variants[skillFamily.variants.Length - 1] = new SkillFamily.Variant
             {
-                skillDef = mySkillDef,
+                skillDef = ArchitectSkills.LoadAsset<SkillDef>("ArchitectInstance"),
                 unlockableName = "",
-                viewableNode = new ViewablesCatalog.Node(mySkillDef.skillNameToken, false, null)
+                viewableNode = new ViewablesCatalog.Node(ArchitectSkills.LoadAsset<SkillDef>("ArchitectInstance").skillNameToken, false, null)
             };
-        }
 
-        private void AddSpecialSkill()
-        {
-            var mySkillDef = ScriptableObject.CreateInstance<SkillDef>();
-            mySkillDef.activationState = new SerializableEntityStateType(typeof(EntityStates.Architect.ScopeShift));
-            mySkillDef.activationStateMachineName = "Weapon";
-            mySkillDef.baseMaxStock = 1;
-            mySkillDef.baseRechargeInterval = 1f;
-            mySkillDef.beginSkillCooldownOnSkillEnd = true;
-            mySkillDef.canceledFromSprinting = false;
-            mySkillDef.fullRestockOnAssign = true;
-            mySkillDef.interruptPriority = InterruptPriority.Skill;
-            mySkillDef.isBullets = false;
-            mySkillDef.isCombatSkill = false;
-            mySkillDef.mustKeyPress = false;
-            mySkillDef.noSprint = false;
-            mySkillDef.rechargeStock = 1;
-            mySkillDef.requiredStock = 1;
-            mySkillDef.shootDelay = 0.1f;
-            mySkillDef.stockToConsume = 0;
-            mySkillDef.icon = ArchitectSprites.LoadAsset<Sprite>("pog");
-            mySkillDef.skillDescriptionToken = "ARCHITECT_SPECIAL_SCOPESHIFT_DESCRIPTION";
-            mySkillDef.skillName = "ARCHITECT_SPECIAL_SCOPESHIFT_NAME";
-            mySkillDef.skillNameToken = "ARCHITECT_SPECIAL_SCOPESHIFT_NAME";
-
-            LoadoutAPI.AddSkillDef(mySkillDef);
-
-            var skillFamily = skillLocator.utility.skillFamily;
+            skillFamily = skillLocator.utility.skillFamily;
 
             Array.Resize(ref skillFamily.variants, skillFamily.variants.Length + 1);
             skillFamily.variants[skillFamily.variants.Length - 1] = new SkillFamily.Variant
             {
-                skillDef = mySkillDef,
+                skillDef = ArchitectSkills.LoadAsset<SkillDef>("ArchitectLink"),
                 unlockableName = "",
-                viewableNode = new ViewablesCatalog.Node(mySkillDef.skillNameToken, false, null)
+                viewableNode = new ViewablesCatalog.Node(ArchitectSkills.LoadAsset<SkillDef>("ArchitectLink").skillNameToken, false, null)
             };
-        }
 
-        private void AddTurretSkills()
-        {
-            LoadoutAPI.AddSkill(typeof(EntityStates.ArchitectNode.FireTesla));
+            skillFamily = skillLocator.special.skillFamily;
 
-            LoadoutAPI.AddSkillDef(Resources.Load<SkillDef>("@Architect:Assets/ScriptableObjects/ArchitectNodeBodyTurret.asset"));
-
-            LoadoutAPI.AddSkillFamily(Resources.Load<SkillFamily>("@Architect:Assets/ScriptableObjects/ArchitectNodePrimaryFamily.asset"));
-        }
-
-        private void AddMasterPrefabs()
-        {
-            MasterCatalog.getAdditionalEntries += (list) =>
+            Array.Resize(ref skillFamily.variants, skillFamily.variants.Length + 1);
+            skillFamily.variants[skillFamily.variants.Length - 1] = new SkillFamily.Variant
             {
-                list.Add(Resources.Load<GameObject>("@Architect:Assets/Prefabs/ArchitectNodeMaster.prefab"));
+                skillDef = ArchitectSkills.LoadAsset<SkillDef>("ArchitectScopeShift"),
+                unlockableName = "",
+                viewableNode = new ViewablesCatalog.Node(ArchitectSkills.LoadAsset<SkillDef>("ArchitectScopeShift").skillNameToken, false, null)
             };
+        }
+
+        private void AddSkillFamilies(List<SkillFamily> list)
+        {
+            list.Add(ArchitectSkills.LoadAsset<SkillFamily>("DesignNodePrimary"));
+        }
+
+        private void AddMasterPrefabs(List<GameObject> list)
+        {
+            list.Add(ArchitectPrefabs.LoadAsset<GameObject>("DesignNodeMaster"));
         }
 
         public static BuffIndex ReduceAttackSpeed5BuffIdx { get; private set; }
         public static BuffIndex ReduceMoveSpeed25BuffIdx { get; private set; }
         public static BuffIndex ReduceArmor30BuffIdx { get; private set; }
-        private void AddBuffs()
+        private void AddBuffs(List<BuffDef> list)
         {
-            ReduceAttackSpeed5BuffIdx = BuffAPI.Add(new CustomBuff("ReducAtkSpd5Stacking", "TODO: Fix this", Color.red, true, true));
-            ReduceMoveSpeed25BuffIdx = BuffAPI.Add(new CustomBuff("ReducMvSpd25Stacking", "TODO: Fix this", Color.green, true, true));
-            ReduceArmor30BuffIdx = BuffAPI.Add(new CustomBuff("ReducArm30Stacking", "TODO: Fix this", Color.yellow, true, true));
+            var ReduceAttackSpeed5Buff = new BuffDef()
+            {
+                name = "ReducAtkSpd5Stacking",
+                iconPath = "TODO: ",
+                buffColor = Color.red,
+                canStack = true,
+                isDebuff = true
+            };
+            var ReduceMoveSpeed25Buff = new BuffDef()
+            {
+                name = "ReducMvSpd25Stacking",
+                iconPath = "TODO: ",
+                buffColor = Color.green,
+                canStack = true,
+                isDebuff = true
+            };
+            var ReduceArmor30BuffIdx = new BuffDef()
+            {
+                name = "ReducArm30Stacking",
+                iconPath = "TODO: ",
+                buffColor = Color.yellow,
+                canStack = true,
+                isDebuff = true
+            };
+
+            list.Add(ReduceAttackSpeed5Buff);
+            list.Add(ReduceMoveSpeed25Buff);
+            list.Add(ReduceArmor30BuffIdx);
         }
 
         static readonly int MassNodeBodyIndex = BodyCatalog.FindBodyIndex("MassNodeBody");
         static readonly int DesignNodeBodyIndex = BodyCatalog.FindBodyIndex("DesignNodeBody");
         static readonly int BloodNodeBodyIndex = BodyCatalog.FindBodyIndex("BloodNodeBody");
+        static bool LoadedBuffIndices = false;
 
         public static void NodeProcs(DamageReport report)
         {
+            if (!LoadedBuffIndices)
+            {
+                ReduceAttackSpeed5BuffIdx = BuffCatalog.FindBuffIndex("ReducAtkSpd5Stacking");
+                ReduceMoveSpeed25BuffIdx = BuffCatalog.FindBuffIndex("ReducMvSpd25Stacking");
+                ReduceArmor30BuffIdx = BuffCatalog.FindBuffIndex("ReducArm30Stacking");
+                LoadedBuffIndices = true;
+            }    
             if (!NetworkServer.active)
                 return;
             if (report.attackerBodyIndex == MassNodeBodyIndex || report.attackerBodyIndex == DesignNodeBodyIndex || report.attackerBodyIndex == BloodNodeBodyIndex)

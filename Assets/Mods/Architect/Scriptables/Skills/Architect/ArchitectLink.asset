@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1391837873, guid: d3bbfb1e816b4714b88ecf5c0bb67e5a, type: 3}
+  m_Name: ArchitectLink
+  m_EditorClassIdentifier: 
+  skillName: ArchitectLink
+  skillNameToken: ARCHITECT_LINK_NAME
+  skillDescriptionToken: ARCHITECT_LINK_DESC
+  keywordTokens: []
+  icon: {fileID: 21300000, guid: f586d6a42e2be76499c6b48e7f922bc3, type: 3}
+  activationStateMachineName: Weapon
+  activationState:
+    _typeName: Architect.EntityStates.Architect.Link, Architect, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
+  interruptPriority: 1
+  baseRechargeInterval: 0.1
+  baseMaxStock: 1
+  rechargeStock: 1
+  isBullets: 0
+  shootDelay: 0.3
+  beginSkillCooldownOnSkillEnd: 1
+  requiredStock: 1
+  stockToConsume: 1
+  isCombatSkill: 0
+  noSprint: 0
+  forceSprintDuringState: 0
+  canceledFromSprinting: 1
+  mustKeyPress: 0
+  fullRestockOnAssign: 1
+  dontAllowPastMaxStocks: 0
