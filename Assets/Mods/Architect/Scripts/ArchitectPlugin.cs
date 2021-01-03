@@ -55,6 +55,8 @@ namespace Architect
 
             MasterCatalog.getAdditionalEntries += AddMasterPrefabs;
 
+            ItemCatalog.modHelper.getAdditionalEntries += AddItems;
+
             BuffCatalog.modHelper.getAdditionalEntries += AddBuffs;
 
             GlobalEventManager.onServerDamageDealt += NodeProcs;
@@ -226,6 +228,11 @@ namespace Architect
         private void AddMasterPrefabs(List<GameObject> list)
         {
             list.Add(ArchitectPrefabs.LoadAsset<GameObject>("DesignNodeMaster"));
+        }
+
+        private void AddItems(List<ItemDef> list)
+        {
+
         }
 
         public static BuffIndex ReduceAttackSpeed5BuffIdx { get; private set; }

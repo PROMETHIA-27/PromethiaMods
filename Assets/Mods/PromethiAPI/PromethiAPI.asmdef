@@ -10,7 +10,8 @@
         "Assembly-CSharp.dll",
         "BepInEx.dll",
         "MonoMod.Utils.dll",
-        "MonoMod.RuntimeDetour.dll"
+        "MonoMod.RuntimeDetour.dll",
+        "Mono.Cecil.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

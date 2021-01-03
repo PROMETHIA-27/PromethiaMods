@@ -32,4 +32,29 @@ namespace PromethiAPI.Hooks
             }
         }
     }
+
+    public static partial class CatalogModHelper<T>
+    {
+        public static class CollectAndRegisterAdditionalEntries
+        {
+            private static System.Reflection.MethodBase _method;
+            private static System.Reflection.MethodBase method => _method ?? (_method =
+                                                                    typeof(RoR2.CatalogModHelper<T>).GetMethods(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public)
+                                                                    .Where(m => m.Name == "CollectAndRegisterAdditionalEntries")
+                                                                    .FirstOrDefault()
+                                                                    ?? throw new System.MissingMethodException());
+            public delegate void Orig(RoR2.CatalogModHelper<T> self, T[] entries);
+            public delegate void Hook(Orig orig, RoR2.CatalogModHelper<T> self);
+            public static event Hook On
+            {
+                add => MonoMod.RuntimeDetour.HookGen.HookEndpointManager.Add<Hook>(method, value);
+                remove => MonoMod.RuntimeDetour.HookGen.HookEndpointManager.Remove<Hook>(method, value);
+            }
+            public static event MonoMod.Cil.ILContext.Manipulator IL
+            {
+                add => MonoMod.RuntimeDetour.HookGen.HookEndpointManager.Modify<Hook>(method, value);
+                remove => MonoMod.RuntimeDetour.HookGen.HookEndpointManager.Unmodify<Hook>(method, value);
+            }
+        }
+    }
 }
