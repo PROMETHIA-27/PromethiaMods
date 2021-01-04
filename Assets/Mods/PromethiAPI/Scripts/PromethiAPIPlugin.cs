@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using RoR2;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,9 @@ namespace PromethiAPI
         public void Awake()
         {
             RoR2.RoR2Application.isModded = true;
+
+            ModhelperFix<BuffDef>.Fix();
+            ModhelperFix<ItemDef>.Fix();
         }
     }
 }

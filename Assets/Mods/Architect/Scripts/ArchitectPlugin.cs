@@ -232,7 +232,7 @@ namespace Architect
 
         private void AddItems(List<ItemDef> list)
         {
-
+            
         }
 
         public static BuffIndex ReduceAttackSpeed5BuffIdx { get; private set; }

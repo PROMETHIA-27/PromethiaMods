@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9368641d3f728ba4583a23a8fc2e03d2, type: 3}
+  m_Name: RainOfMods
+  m_EditorClassIdentifier: 
+  author: Promethia
+  version_number: 0.0.1
+  website_url: https://github.com/PROMETHIA-27/PromethiaMods
+  description: Core API for modding Risk of Rain 2 in the Thunderkit ecosystem
+  dependencies: []
+  unityPackages: []
+  plugins: []
+  patchers: []
+  monomod: []
+  assetBundles: []
+  readme: {fileID: 0}
+  icon: {fileID: 0}

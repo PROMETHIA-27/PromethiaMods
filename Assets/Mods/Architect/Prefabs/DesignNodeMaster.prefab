@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 7246298651553046460}
   - component: {fileID: 4840423033716839051}
   m_Layer: 0
-  m_Name: ArchitectNodeMaster
+  m_Name: DesignNodeMaster
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,9 +133,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   customName: AI
   initialStateType:
-    _typeName: EntityStates.AI.Walker.Wander
+    _typeName: EntityStates.AI.Walker.Wander, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   mainStateType:
-    _typeName: EntityStates.AI.Walker.Wander
+    _typeName: EntityStates.AI.Walker.Wander, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
 --- !u!114 &6584122900141293940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +158,8 @@ MonoBehaviour:
   desiredSpawnNodeGraphType: 0
   stateMachine: {fileID: 7660634459766566810}
   scanState:
-    _typeName: EntityStates.AI.Walker.Wander
+    _typeName: EntityStates.AI.Walker.Wander, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   isHealer: 0
   enemyAttention: 0
   aimVectorDampTime: 0.03

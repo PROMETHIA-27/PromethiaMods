@@ -2,21 +2,19 @@
 using MonoMod.Cil;
 using RoR2;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace PromethiAPI
 {
     public class ModhelperFix<T>
     {
-        public void Fix()
+        public static void Fix()
         {
             if (!BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.bepis.r2api"))
                 Hooks.CatalogModHelper<T>.CollectAndRegisterAdditionalEntries.IL += FixIL;
         }
 
-        private void FixIL(ILContext il)
+        private static void FixIL(ILContext il)
         {
             ILCursor c = new ILCursor(il);
 
